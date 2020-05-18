@@ -1,5 +1,5 @@
 {
-  "name": "geo-test",
+  "name": "geo-kathy",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -12,17 +12,37 @@
     "build": "cd client && npm run build",
     "heroku-postbuild": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cassandraheil/Geo-Kathy.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cassandraheil/Geo-Kathy/issues"
+  },
+  "homepage": "https://github.com/Cassandraheil/Geo-Kathy#readme",
   "devDependencies": {
     "concurrently": "^4.1.0",
     "nodemon": "^1.18.7"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors-anywhere": "^0.4.3",
     "express": "^4.17.1",
-    "if-env": "^1.0.4",
+    "express-session": "^1.17.1",
+    "is-empty": "^1.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.25.3",
     "mongoose": "^5.9.13",
-    "path": "^0.12.7"
+    "node": "^14.2.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^6.0.1",
+    "path": "^0.12.7",
+    "react-router-dom": "^5.2.0",
+    "validator": "^13.0.0"
   }
 }

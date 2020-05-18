@@ -4,18 +4,24 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   username: { 
       type: String, 
-      required: true 
-    },
+      required: true,
+      unique: true,
+      trim: true
+  },
   password: { 
       type: String, 
       required: true 
-    },
+  },
   currentLocation: { 
-      type: String,
-    },
+      type: String
+  },
   pastLocations: { 
-      type: Array, 
-    }
+      type: Array
+  },
+  date: {
+      type: Date,
+      default: Date.now
+  }
 });
 
 const User = mongoose.model("User", userSchema);

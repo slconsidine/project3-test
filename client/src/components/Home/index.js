@@ -11,11 +11,12 @@ class Home extends Component {
     posts: [],
     body: "",
     author: "",
-    location: {
-      city: "",
-      state: "",
-      zip: ""
-    },
+    // location: {
+    //   city: "",
+    //   state: "",
+    //   zip: ""
+    // },
+    location: "",
     restaurants: []
   };
 
@@ -27,13 +28,10 @@ class Home extends Component {
   loadPosts = () => {
     API.locationLookUp()
       .then(res => {
-        this.setState({ location: {
-          city: res.data.city,
-          state: res.data.region_code,
-          zip: res.data.zip
-        }})
-        console.log("locationLookUp location set: " + this.state.location.city + ", " + this.state.location.state + " " + this.state.location.zip);
-        API.getPosts(this.state.location.city, this.state.location.state)
+        console.log("API locationlookup res", res)
+        this.setState({ location: res.data })
+        console.log("this location state: ", this.state.location)
+        API.getPosts(this.state.location)
           .then(res =>
             this.setState({ posts: res.data, body: "", author: "" }),
           )
@@ -42,51 +40,61 @@ class Home extends Component {
       .catch(err => console.log(err))
   };
 
-  loadRestaurants = (location, term) => {
-    console.log("loadRestaurants location: " + location.city)
-    API.yelpCall(location, term)
-    .then(res => {
-      var restaurantsInArea = [];
-      console.log("restaurants now", res.data)
-        for (var i=0; i< res.data.businesses.length; i++){
-        var data = res.data.businesses[i];
-        restaurantsInArea.push({
-          name: data.name,
-          address: {
-            address1: data.location.address1,
-            city: data.location.city,
-            state: data.location.state,
-            zip: data.location.zip_code
-          },
-          phone: data.display_phone,
-          img: data.image_url,
-          url: data.url,
-          rating: data.rating,
-          distance: data.distance * 0.000621371,
-          isClosed: data.is_closed
-
-
-        })
-      }      
-      function compare(a, b) {
-        // Use toUpperCase() to ignore character casing
-        const bandA = a.distance;
-        const bandB = b.distance;
-        
-        let comparison = 0;
-        if (bandA > bandB) {
-          comparison = 1;
-        } else if (bandA < bandB) {
-          comparison = -1;
-        }
-        return comparison;
-      }
-      
-      restaurantsInArea.sort(compare);
-      this.setState({ restaurants: restaurantsInArea })
-  })
-    .catch(err => console.log(err));
+  loadRestaurants = () => {
+    console.log("API.yelpCall: ", this.state.location)
+    API.yelpCall(this.state.location)
+      .then(res => {
+        this.setState({ restaurants: res.data })
+      })
+    console.log("restaurants state: ", this.state.restaurants)
   }
+
+  // loadRestaurants = (location, term) => {
+  //   console.log("loadRestaurants location: " + location)
+  //   location.split(",").join("");
+  //   API.yelpCall(location, term)
+  //   .then(res => {
+  //     var restaurantsInArea = [];
+  //     console.log("restaurants now", res.data)
+  //       for (var i=0; i< res.data.businesses.length; i++){
+  //       var data = res.data.businesses[i];
+  //       restaurantsInArea.push({
+  //         name: data.name,
+  //         address: {
+  //           address1: data.location.address1,
+  //           city: data.location.city,
+  //           state: data.location.state,
+  //           zip: data.location.zip_code
+  //         },
+  //         phone: data.display_phone,
+  //         img: data.image_url,
+  //         url: data.url,
+  //         rating: data.rating,
+  //         distance: data.distance * 0.000621371,
+  //         isClosed: data.is_closed
+
+
+  //       })
+  //     }      
+  //     function compare(a, b) {
+  //       // Use toUpperCase() to ignore character casing
+  //       const bandA = a.distance;
+  //       const bandB = b.distance;
+        
+  //       let comparison = 0;
+  //       if (bandA > bandB) {
+  //         comparison = 1;
+  //       } else if (bandA < bandB) {
+  //         comparison = -1;
+  //       }
+  //       return comparison;
+  //     }
+      
+  //     restaurantsInArea.sort(compare);
+  //     this.setState({ restaurants: restaurantsInArea })
+  // })
+  //   .catch(err => console.log(err));
+  // }
 
 //   deleteBook = id => {
 //     API.deleteBook(id)
@@ -99,6 +107,8 @@ handleInputChange = event => {
   this.setState({
     [name]: value
   });
+  console.log("handleInputChange value: " + this.state.author)
+  console.log(this.state.body)
 };
 
 handleFormSubmit = event => {
@@ -108,23 +118,22 @@ handleFormSubmit = event => {
     API.savePost({
       body: this.state.body,
       author: this.state.author,
-      city: this.state.location.city,
-      state: this.state.location.state
+      location: this.state.location
     })
-      .then(res => this.loadPosts())
+      .then(res => this.loadPosts(), console.log("post was saved"))
       .catch(err => console.log(err));
   }
 };
 
 locationClick = event => {
   event.preventDefault();
-  API.locationLookUp()
-  .then(res =>{
-    this.setState({ city: res.data.city, state: res.data.region_code })
-  })
-    .catch(err => console.log(err))
-  console.log(this.state.location);
-  this.loadRestaurants(this.state.location, "restaurant");
+  // API.locationLookUp()
+  // .then(res =>{
+  //   this.setState({ location: res.data })
+  // })
+  //   .catch(err => console.log(err))
+  // console.log(this.state.location);
+  this.loadRestaurants();
 }
 
 render() {
@@ -148,7 +157,7 @@ render() {
               value={this.state.body}
               onChange={this.handleInputChange}
               name="body"
-              placeholder="Body"
+              placeholder="Post Body"
             />
             <FormBtn
               disabled={!(this.state.author && this.state.body)}
@@ -169,7 +178,7 @@ render() {
               {this.state.posts.map(post => (
                 <ListItem key={post._id}>
                     <h3>{post.author}</h3>
-                    <h4>Location: {post.city + ", " + post.state}</h4>
+                    <h4>Location: {post.location}</h4>
                     <p>Date: {Moment(post.date).format('MMMM Do YYYY, h:mm a')}</p>
                     <p>{post.body}</p>
                 </ListItem>

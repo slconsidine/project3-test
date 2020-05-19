@@ -12,7 +12,10 @@ const userSchema = new Schema({
       type: String, 
       required: true 
   },
-  currentLocation: { 
+  city: { 
+      type: String
+  },
+  state: {
       type: String
   },
   pastLocations: { 

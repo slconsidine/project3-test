@@ -12,12 +12,7 @@ const postSchema = new Schema({
     //   ref: "User" 
     type: String
     },
-  city: {
-    //   type: Schema.Types.ObjectId, 
-    //   ref: "User" 
-    type: String
-    },
-  state: {
+  location: {
     type: String
   },
   date: { 
